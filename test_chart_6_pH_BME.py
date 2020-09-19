@@ -1,7 +1,7 @@
 """
 参考URL：https://toptechboy.com/python-with-arduino-lesson-11-plotting-and-graphing-live-data-from-arduino-with-matplotlib/
 ESP32, 中華パチモンUNOで動作確認
-マイコンから受け取ったデータをグラフ化
+マイコンから受け取ったデータ4種をグラフ化
 4つのサブプロットで描画
 """
 import serial 
@@ -107,6 +107,8 @@ try:
         if(cnt>300):       #何点のデータをグラフ上に保持するか
             data_A.pop(0)                       
             data_B.pop(0)
+            data_C.pop(0)                       
+            data_D.pop(0)
 
 #コンソール上でCTRL＋C長押しで処理中止
 except KeyboardInterrupt:
