@@ -1,12 +1,19 @@
+/*
+switch-science/BME280
+https://www.switch-science.com/catalog/2236/
+http://trac.switch-science.com/wiki/BME280
+
+switch-science/Gravity - pHセンサ/メーターキット
+https://www.switch-science.com/catalog/4021/
+*/
 #include <Wire.h>
 
 #define BME280_ADDRESS 0x76
 unsigned long int hum_raw,temp_raw,pres_raw;
 signed long int t_fine;
-#define SensorPin 0          //pH meter Analog output to Arduino Analog Input 0
-unsigned long int avgValue;  //Store the average value of the sensor feedback
-float b;
-int buf[10],temp;
+
+#define SensorPin 0
+float phValue;
 
 uint16_t dig_T1;
  int16_t dig_T2;
@@ -29,9 +36,9 @@ uint16_t dig_P1;
 
 void setup()
 {
-    uint8_t osrs_t = 3;             //Temperature oversampling x 1
-    uint8_t osrs_p = 3;             //Pressure oversampling x 1
-    uint8_t osrs_h = 3;             //Humidity oversampling x 1
+    uint8_t osrs_t = 1;             //Temperature oversampling x 1
+    uint8_t osrs_p = 1;             //Pressure oversampling x 1
+    uint8_t osrs_h = 1;             //Humidity oversampling x 1
     uint8_t mode = 3;               //Normal mode
     uint8_t t_sb = 5;               //Tstandby 1000ms
     uint8_t filter = 0;             //Filter off 
@@ -59,29 +66,28 @@ void loop()
     
     readData();
     
-      for(int i=0;i<10;i++)       //Get 10 sample value from the sensor for smooth the value
-  { 
-    buf[i]=analogRead(SensorPin);
+
+    for (int i = 0; i < 10; i++) // Get 10 sample value from the sensor for smooth the value
+  {
+    buf[i] = analogRead(SensorPin);
     delay(10);
   }
-  for(int i=0;i<9;i++)        //sort the analog from small to large
+  for (int i = 0; i < 9; i++) // sort the analog from small to large
   {
-    for(int j=i+1;j<10;j++)
-    {
-      if(buf[i]>buf[j])
-      {
-        temp=buf[i];
-        buf[i]=buf[j];
-        buf[j]=temp;
+    for (int j = i + 1; j < 10; j++) {
+      if (buf[i] > buf[j]) {
+        temp = buf[i];
+        buf[i] = buf[j];
+        buf[j] = temp;
       }
     }
   }
-  avgValue=0;
-  for(int i=2;i<8;i++)                      //take the average value of 6 center sample
-    avgValue+=buf[i];
-  float phValue=(float)avgValue*5.0/1024/6; //convert the analog into millivolt
-  phValue=3.5*phValue;                      //convert the millivolt into pH value
-  delay(800);
+  avgValue = 0;
+  for (int i = 2; i < 8; i++) // take the average value of 6 center sample
+    avgValue += buf[i];
+  float phValue =
+      (float)avgValue * 5.0 / 1024 / 6; // convert the analog into millivolt
+  phValue = 3.5 * phValue * 100;        // convert the millivolt into pH value
 
     temp_cal = calibration_T(temp_raw);
     press_cal = calibration_P(pres_raw);
@@ -89,15 +95,13 @@ void loop()
     temp_act = (double)temp_cal / 100.0;
     press_act = (double)press_cal / 100.0;
     hum_act = (double)hum_cal / 1024.0;
-
-    Serial.print(phValue);
-    Serial.print(',');
+    Serial.print("TEMP : ");
     Serial.print(temp_act);
-    Serial.print(',');
+    Serial.print(" DegC  PRESS : ");
     Serial.print(press_act);
-    Serial.print(',');
-    Serial.println(hum_act);
-
+    Serial.print(" hPa  HUM : ");
+    Serial.print(hum_act);
+    Serial.println(" %");    
     
     delay(1000);
 }
