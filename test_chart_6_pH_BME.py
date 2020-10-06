@@ -40,7 +40,7 @@ def makeFig():
     plt.grid(True)
     
     
-    plt.ylabel('A, %')
+    plt.ylabel('A, -')
     plt.plot(data_A, 'mediumvioletred', label='A')
     #plt.ylim(xx,xx)
     plt.legend(loc='upper left')
@@ -53,7 +53,7 @@ def makeFig():
     plt.legend(loc='upper left')
     
     plt.subplot(223)    
-    plt.ylabel('C, %')
+    plt.ylabel('C, -')
     plt.plot(data_C, 'goldenrod', label='C')
     #plt.ylim(xx,xx)
     plt.legend(loc='upper left')
